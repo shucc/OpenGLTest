@@ -1,4 +1,4 @@
-package org.cchao.opengltest;
+package org.cchao.opengltest.renderer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +7,10 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+
+import org.cchao.opengltest.BuildConfig;
+import org.cchao.opengltest.R;
+import org.cchao.opengltest.Utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -4,6 +4,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import org.cchao.opengltest.renderer.BallGLRenderer;
+
 public class MainActivity extends AppCompatActivity {
 
     private GLSurfaceView glSurfaceView;
@@ -14,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         glSurfaceView = findViewById(R.id.gl_surface);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new OvalGLRenderer());
+        glSurfaceView.setRenderer(new BallGLRenderer());
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 

@@ -1,14 +1,16 @@
-package org.cchao.opengltest;
+package org.cchao.opengltest.renderer;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+
+import org.cchao.opengltest.R;
+import org.cchao.opengltest.Utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
 /**

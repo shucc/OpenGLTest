@@ -1,14 +1,17 @@
-package org.cchao.opengltest;
+package org.cchao.opengltest.renderer;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import org.cchao.opengltest.R;
+import org.cchao.opengltest.Utils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -17,48 +20,69 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by shucc on 18/1/25.
  * cc@cchao.org
  */
-public class OvalGLRenderer implements GLSurfaceView.Renderer {
+public class RectGLRenderer implements GLSurfaceView.Renderer {
 
     private final String TAG = getClass().getName();
 
     private final int COORDS_PER_VERTEX = 3;
 
-    private int positionHandle;
+    private final float[] triangleCoords = new float[] {
+            -0.5f,  0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f
+    };
 
-    private int matrixHandle;
+    private final float[] color = new float[] {
+            0.0f, 1.0f, 0.0f, 1.0f ,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f
+    };
 
-    private int colorHandle;
+    private final short[] index = new short[] {
+            0, 1, 2,
+            0, 2, 3
+    };
 
     private float[] viewMatrix = new float[16];
     private float[] projectMatrix = new float[16];
     private float[] mvpMatrix = new float[16];
 
-    private final int vertexStride = 0;
+    private final int vertexStride = COORDS_PER_VERTEX * 4;
 
-    private float radius = 1.0f;
+    private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
 
-    private int n = 360;
+    private int positionHandle;
 
-    private float height = 0.0f;
+    private int colorHandle;
 
-    private float[] shapePos;
+    private int matrixHandle;
 
-    //设置颜色，依次为红绿蓝和透明通道
-    private float color[] = {1.0f, 0f, 0f, 0f};
+    private ShortBuffer indexBuffer;
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        shapePos = createPositions();
         //绘制背景色
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 0f);
         //坐标数据转换为FloatBuffer，用于传入给OpenGL ES程序
-        FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(shapePos.length * 4)
+        FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(triangleCoords.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
-                .put(shapePos);
+                .put(triangleCoords);
         vertexBuffer.position(0);
-        int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, Utils.loadShader(R.raw.oval_vertex));
-        int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.loadShader(R.raw.oval_frag));
+        FloatBuffer colorBuffer = ByteBuffer.allocateDirect(color.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer()
+                .put(color);
+        colorBuffer.position(0);
+        indexBuffer = ByteBuffer.allocateDirect(index.length * 2)
+                .order(ByteOrder.nativeOrder())
+                .asShortBuffer()
+                .put(index);
+        indexBuffer.position(0);
+        int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, Utils.loadShader(R.raw.isosceles_triangle_vertex));
+        int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.loadShader(R.raw.isosceles_triangle_frag));
         //创建一个空的OpenGL ES程序
         int program = GLES20.glCreateProgram();
         //顶点着色器加入到程序
@@ -71,9 +95,11 @@ public class OvalGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glUseProgram(program);
         matrixHandle = GLES20.glGetUniformLocation(program, "vMatrix");
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        colorHandle = GLES20.glGetUniformLocation(program, "vColor");
+        colorHandle = GLES20.glGetAttribLocation(program, "aColor");
         GLES20.glEnableVertexAttribArray(positionHandle);
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+        GLES20.glEnableVertexAttribArray(colorHandle);
+        GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 0, colorBuffer);
     }
 
     @Override
@@ -93,27 +119,10 @@ public class OvalGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glUniform4fv(colorHandle, 1, color, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, shapePos.length / 3);
+        //GLES20.glUniform4fv(colorHandle, 1, color, 0);
+        //GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, vertexCount);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
         GLES20.glDisableVertexAttribArray(positionHandle);
-    }
-
-    private float[] createPositions() {
-        ArrayList<Float> data = new ArrayList<>();
-        data.add(0.0f);
-        data.add(0.0f);
-        data.add(height);
-        float angDegSpan = 360f / n;
-        for (float i = 0; i < 360 + angDegSpan; i += angDegSpan) {
-            data.add((float) (radius * Math.sin(i * Math.PI / 180f)));
-            data.add((float) (radius * Math.cos(i * Math.PI / 180f)));
-            data.add(height);
-        }
-        float[] f = new float[data.size()];
-        for (int i = 0; i < f.length; i++) {
-            f[i] = data.get(i);
-        }
-        return f;
     }
 
     private int loadShader(int type, String shaderCode) {

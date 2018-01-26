@@ -1,14 +1,16 @@
-package org.cchao.opengltest;
+package org.cchao.opengltest.renderer;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import org.cchao.opengltest.R;
+import org.cchao.opengltest.Utils;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -17,30 +19,29 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by shucc on 18/1/25.
  * cc@cchao.org
  */
-public class RectGLRenderer implements GLSurfaceView.Renderer {
+public class IsoscelesTriangleGLRenderer implements GLSurfaceView.Renderer {
 
     private final String TAG = getClass().getName();
 
     private final int COORDS_PER_VERTEX = 3;
 
     private final float[] triangleCoords = new float[] {
-            -0.5f,  0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f,
             -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f,  0.5f, 0.0f
+            0.5f, -0.5f, 0.0f
     };
 
     private final float[] color = new float[] {
             0.0f, 1.0f, 0.0f, 1.0f ,
             1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f
+            0.0f, 0.0f, 1.0f, 1.0f
     };
 
-    private final short[] index = new short[] {
-            0, 1, 2,
-            0, 2, 3
-    };
+    private int positionHandle;
+
+    private int colorHandle;
+
+    private int matrixHandle;
 
     private float[] viewMatrix = new float[16];
     private float[] projectMatrix = new float[16];
@@ -49,14 +50,6 @@ public class RectGLRenderer implements GLSurfaceView.Renderer {
     private final int vertexStride = COORDS_PER_VERTEX * 4;
 
     private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
-
-    private int positionHandle;
-
-    private int colorHandle;
-
-    private int matrixHandle;
-
-    private ShortBuffer indexBuffer;
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -73,11 +66,6 @@ public class RectGLRenderer implements GLSurfaceView.Renderer {
                 .asFloatBuffer()
                 .put(color);
         colorBuffer.position(0);
-        indexBuffer = ByteBuffer.allocateDirect(index.length * 2)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer()
-                .put(index);
-        indexBuffer.position(0);
         int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, Utils.loadShader(R.raw.isosceles_triangle_vertex));
         int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.loadShader(R.raw.isosceles_triangle_frag));
         //创建一个空的OpenGL ES程序
@@ -117,8 +105,7 @@ public class RectGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mvpMatrix, 0);
         //GLES20.glUniform4fv(colorHandle, 1, color, 0);
-        //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
         GLES20.glDisableVertexAttribArray(positionHandle);
     }
 

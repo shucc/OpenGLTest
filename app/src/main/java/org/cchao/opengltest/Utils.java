@@ -1,8 +1,5 @@
 package org.cchao.opengltest;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.support.annotation.RawRes;
@@ -11,8 +8,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import static android.content.Context.ACTIVITY_SERVICE;
 
 /**
  * Created by shucc on 18/1/24.
