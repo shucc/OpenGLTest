@@ -3,10 +3,18 @@ package org.cchao.opengltest.renderer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
+import android.util.Log;
 
 import org.cchao.opengltest.R;
 import org.cchao.opengltest.Utils;
@@ -23,8 +31,11 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by shucc on 18/1/29.
  * cc@cchao.org
  */
-public class ImageGLRenderer implements GLSurfaceView.Renderer {
+public class WordGLRenderer implements GLSurfaceView.Renderer {
 
+    private final String TAG = getClass().getName();
+
+    //顶点坐标
     private final float[] sPos = new float[]{
             -1.0f, 1.0f,    //左上角
             -1.0f, -1.0f,   //左下角
@@ -53,12 +64,13 @@ public class ImageGLRenderer implements GLSurfaceView.Renderer {
     private int glTexture;
     private int glMatrix;
 
-    public ImageGLRenderer(Context context) {
-        try {
-            bitmap = BitmapFactory.decodeStream(context.getResources().getAssets().open("cat.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private String content;
+
+    private int height;
+
+    public WordGLRenderer(String content) {
+        this.content = content;
+        initFontBitmap();
         bPos = ByteBuffer.allocateDirect(sPos.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
@@ -153,6 +165,29 @@ public class ImageGLRenderer implements GLSurfaceView.Renderer {
             return texture[0];
         }
         return 0;
+    }
+
+    /**
+     * android中绘制字体，使用画布canvas
+     */
+    public void initFontBitmap(){
+        Bitmap originBitmap = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(originBitmap);
+        //背景颜色
+        canvas.drawColor(Color.GRAY);
+        TextPaint p = new TextPaint();
+        //消除锯齿
+        p.setAntiAlias(true);
+        //字体为红色
+        p.setColor(Color.RED);
+        p.setTextSize(20);
+        StaticLayout staticLayout = new StaticLayout(content, p, canvas.getWidth()
+                , Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f
+                , false);
+        staticLayout.draw(canvas);
+        Paint.FontMetricsInt fontMetricsInt = p.getFontMetricsInt();
+        int textHeight = fontMetricsInt.bottom - fontMetricsInt.top;
+        bitmap = Bitmap.createBitmap(originBitmap, 0, 0, originBitmap.getWidth(), textHeight * staticLayout.getLineCount());
     }
 
     private int loadShader(int type, String shaderCode) {

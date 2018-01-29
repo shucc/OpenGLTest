@@ -40,7 +40,7 @@ public class BallGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         cubePositions = createBallPos();
         //绘制背景色
-        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 0f);
+        GLES20.glClearColor(0f, 0f, 0f, 0f);
         //坐标数据转换为FloatBuffer，用于传入给OpenGL ES程序
         FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(cubePositions.length * 4)
                 .order(ByteOrder.nativeOrder())

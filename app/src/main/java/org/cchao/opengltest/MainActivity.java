@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import org.cchao.opengltest.renderer.BallGLRenderer;
+import org.cchao.opengltest.renderer.ImageGLRenderer;
+import org.cchao.opengltest.renderer.WordGLRenderer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         glSurfaceView = findViewById(R.id.gl_surface);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new BallGLRenderer());
+        glSurfaceView.setRenderer(new WordGLRenderer("君不见黄河之水天上来，奔流到海不复回。"));
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
