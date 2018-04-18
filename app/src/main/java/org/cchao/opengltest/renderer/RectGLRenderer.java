@@ -110,7 +110,7 @@ public class RectGLRenderer implements GLSurfaceView.Renderer {
         //设置透视投影
         Matrix.frustumM(projectMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
         //设置相机位置
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 7.0f, 0f, 0f, 0f, 0f, 1.0f, 0f);
+        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 5.0f, 0f, 0f, 0f, 0f, 1.0f, 0f);
         //计算变换矩阵
         Matrix.multiplyMM(mvpMatrix, 0, projectMatrix, 0, viewMatrix, 0);
     }

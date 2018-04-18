@@ -55,7 +55,7 @@ public class ImageGLRenderer implements GLSurfaceView.Renderer {
 
     public ImageGLRenderer(Context context) {
         try {
-            bitmap = BitmapFactory.decodeStream(context.getResources().getAssets().open("cat.png"));
+            bitmap = BitmapFactory.decodeStream(context.getResources().getAssets().open("scan.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }

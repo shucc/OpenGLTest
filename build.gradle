@@ -26,7 +26,7 @@ ext {
     buildToolsVersion = "27.0.0"
     compileVersion = 27
     minSdk = 16
-    targetSdk = 26
+    targetSdk = 22
     //App dependencies
     supportLibraryVersion = '27.0.2'
     butterKnifeVersion = '8.8.1'

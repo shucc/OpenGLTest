@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -85,7 +86,7 @@ public class WordGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        GLES20.glClearColor(0f, 0f, 0f, 0f);
         GLES20.glEnable(GLES20.GL_TEXTURE_2D);
         int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, Utils.loadShader(R.raw.image_vertex));
         int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.loadShader(R.raw.image_frag));
@@ -174,13 +175,13 @@ public class WordGLRenderer implements GLSurfaceView.Renderer {
         Bitmap originBitmap = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(originBitmap);
         //背景颜色
-        canvas.drawColor(Color.GRAY);
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         TextPaint p = new TextPaint();
         //消除锯齿
         p.setAntiAlias(true);
         //字体为红色
         p.setColor(Color.RED);
-        p.setTextSize(20);
+        p.setTextSize(14);
         StaticLayout staticLayout = new StaticLayout(content, p, canvas.getWidth()
                 , Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f
                 , false);
